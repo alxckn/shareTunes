@@ -9,12 +9,13 @@ var bodyParser = require("body-parser");
 var port = process.env.PORT || 8280;
 
 // For test purpose
-app.set('view engine', 'ejs');
+//app.set('view engine', 'ejs');
 
 app.use(morgan('combined'))
     .use(bodyParser.urlencoded({ extended: false }))
     .use(bodyParser.json());
 
+app.use(express.static(__dirname + '/public'));
 require('./app/routes')(app);
 
 var server = app.listen(port);
