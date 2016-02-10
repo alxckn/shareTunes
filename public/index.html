@@ -3,15 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>shareTunes</title>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        var socket = io.connect('http://localhost:8280');
-        socket.on('hello', function(message) {
-            alert(message);
-        });
-    </script>
+    <link rel="stylesheet" href="/node_modules/angular-material/angular-material.css"/>
+    <link rel="stylesheet" href="css/app.css"/>
 </head>
-<body>
+<body ng-app="sharetunesApp" layout="row" ng-controller="sharetunesCtrl">
 
+<h1>Welcome to shareTunes App !!</h1>
+
+
+
+
+
+<script src="/node_modules/angular/angular.js" />
+<script src="/node_modules/angular-aria/angular-aria.js" />
+<script src="/node_modules/angular-animate/angular-animate.js" />
+<script src="/node_modules/angular-material/angular-material.js" />
+<script src="js/core.js" />
+<script src="js/controllers/main.js" />
+<script>
+    angular.module( 'sharetunesApp', [ 'ngMaterial' ] )
+        .controller("sharetunesCtrl", sharetunesCtrl );
+</script>
 </body>
 </html>
