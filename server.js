@@ -6,6 +6,7 @@ var express = require('express');
 var app = express();
 var morgan = require('morgan');
 var bodyParser = require("body-parser");
+var path = require('path');
 var port = process.env.PORT || 8280;
 
 // For test purpose
@@ -17,13 +18,12 @@ app.use(morgan('combined'))
     .use(bodyParser.json());
 
 require('./app/routes')(app);
-
+app.use('/',express.static(path.join(__dirname, '/')));
 var server = app.listen(port);
 console.log('App listening on '+port);
 
 var io = require('socket.io').listen(server);
 
 io.on('connection', function(socket) {
-
-        socket.emit('hello', 'Bonjour petit nouveau');
+        socket.emit('hello', 'Hey from the other node server');
 });
