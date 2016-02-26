@@ -4,23 +4,38 @@
 
 var express = require('express');
 var app = express();
-var morgan = require('morgan');
-var bodyParser = require("body-parser");
-var path = require('path');
 var port = process.env.PORT || 8280;
+var mongoose = require('mongoose');
+var passport = require('passport');
+var flash    = require('connect-flash');
 
-// For test purpose
+var morgan      = require('morgan');
+var bodyParser  = require("body-parser");
+var session     = require('express-session');
 
-app.set('view engine', 'ejs');
+var configDB = require('./config/database.js');
 
-app.use(morgan('combined'))
+app.use(morgan('dev'))
     .use(bodyParser.urlencoded({ extended: false }))
     .use(bodyParser.json());
 
-require('./app/routes')(app);
-app.use('/',express.static(path.join(__dirname, '/')));
+// configuration ===============================================================
+mongoose.connect(configDB.url); // connect to our database
+
+require('./config/passport')(passport); // pass passport for configuration
+
+// required for passport
+app.use(session({ secret: 'mySecretPass',
+                saveUninitialized: true,
+                resave: true})); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
+app.use(flash()); // use connect-flash for flash messages stored in session
+
+require('./app/routes')(app, passport);
+
 var server = app.listen(port);
-console.log('App listening on '+port);
+console.log('App listening on ' + port);
 
 var io = require('socket.io').listen(server);
 
