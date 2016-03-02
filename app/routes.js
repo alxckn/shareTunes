@@ -5,8 +5,16 @@ module.exports = function(app, passport, router) {
     var friendRoutes = require('./routes/friend.js');
 
     router.route('/add-friend/:friend_id')
-        .put(friendRoutes.putFriend);
+        .put(friendRoutes.addFriend);
 
     router.route('/get-friends')
         .get(friendRoutes.getFriends);
+
+    router.route('/approve-friend/:id')
+        .put(friendRoutes.approveFriend);
+
+    var userRoutes = require('./routes/user.js');
+
+    router.route('/user/:id')
+        .get(userRoutes.getUser);
 };

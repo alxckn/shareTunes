@@ -49,13 +49,13 @@ var createFriend = function(friend_id, req) {
                     resolve('Friendship was created');
                 });
             }).catch(function(message) {
-            console.log(message)
+            console.log(message);
             reject(message);
         });
     });
 };
 
-exports.putFriend = function(req, res) {
+exports.addFriend = function(req, res) {
     var friendId = req.params.friend_id;
     Promise
         .all([createFriend(friendId, req)])
@@ -77,14 +77,10 @@ var createFriendsJson = function(friendships, userId) {
     friendsJson['toApprove'] = [];
     friendsJson['pending'] = [];
 
-    console.log(friendships);
-
     for (var i=0; i<2; i++) {
         if (typeof friendships[i] !== 'undefined'){
             for (var j in friendships[i]) {
                 var friend = friendships[i][j];
-                console.log(friend);
-                console.log(userId);
                 if (friend.friend1_id == userId)
                     friend.accepted ? friendsJson['friends'].push(friend.friend2_id) : friendsJson['pending'].push(friend.friend2_id);
                 else if (friend.friend2_id == userId)
@@ -117,4 +113,36 @@ exports.getFriends = function(req, res) {
             res.status(404);
             res.send(message);
     });
+};
+
+exports.approveFriend = function(req, res) {
+    var promise = new Promise(function(resolve, reject) {
+        Friendship.findOne({$and : [{friend1_id: req.params.id}, {friend2_id: req.user.id}, {accepted: false}]}, function (err, friendship) {
+            console.log(friendship);
+            if (err)
+                reject('There was an error');
+            if (friendship == null || !friendship) {
+                reject('No friendship to accept found');
+            }
+            else {
+                friendship.accepted = true;
+                friendship.save(function(err) {
+                    if (err) {
+                        reject('Error when updating friendship');
+                    }
+                    resolve('Friendship was updated');
+                });
+            }
+        });
+    });
+    Promise
+        .all([promise])
+        .then(function(message) {
+            res.status(200);
+            res.send(message);
+        })
+        .catch(function(message) {
+            res.status(404);
+            res.send(message);
+        });
 };
