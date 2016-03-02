@@ -1,25 +1,12 @@
-var path = require('path');
+module.exports = function(app, passport, router) {
 
-module.exports = function(app, passport) {
+    require('./routes/passport-routes')(app, passport);
 
-    app.post('/signup',
-        passport.authenticate('local-signup'),
-        function(req, res) {
-            res.json({ message: 'Signup OK', user: req.user.local.email });
-        });
+    var friendRoutes = require('./routes/friend.js');
 
-    app.post('/login',
-        passport.authenticate('local-login'),
-        function(req, res) {
-            res.json({ message: 'Login OK', user: req.user.local.email });
-        });
+    router.route('/add-friend/:friend_id')
+        .put(friendRoutes.putFriend);
 
-    app.post('/loggedin', function(req, res) {
-       res.json({ message: req.isAuthenticated() ? 'loggedIn' : 'notLoggedIn' })
-    });
-
-    app.post('/logout', function(req,res) {
-        req.logOut();
-        res.json({ message: 'loggedOut' })
-    })
+    router.route('/get-friends')
+        .get(friendRoutes.getFriends);
 };

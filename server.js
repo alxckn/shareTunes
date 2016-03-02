@@ -16,7 +16,7 @@ var session     = require('express-session');
 var configDB = require('./config/database.js');
 
 app.use(morgan('dev'))
-    .use(bodyParser.urlencoded({ extended: false }))
+    .use(bodyParser.urlencoded({ extended: true }))
     .use(bodyParser.json());
 
 // configuration ===============================================================
@@ -32,7 +32,10 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
-require('./app/routes')(app, passport);
+var router = express.Router();
+require('./app/routes')(app, passport, router);
+
+app.use('/', router);
 
 var server = app.listen(port);
 console.log('App listening on ' + port);
